@@ -1,0 +1,11 @@
+package ipkgparser
+
+modules    = Main,
+             Arith
+
+opts       = "-p lightyear"
+
+sourcedir  = src
+
+executable = anatomy
+main       = Main
