@@ -1,0 +1,5 @@
+# anatomy
+
+```
+idris -p lightyear
+```
