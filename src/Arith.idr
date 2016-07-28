@@ -12,10 +12,10 @@ data Expr = Num Integer
 
 instance Show Expr where
   show (Num i) = show i
-  show (Add e1 e2) = show e1 ++ " + " ++ show e2
-  show (Sub e1 e2) = show e1 ++ " - " ++ show e2
-  show (Mul e1 e2) = show e1 ++ " * " ++ show e2
-  show (Div e1 e2) = show e1 ++ " / " ++ show e2
+  show (Add e1 e2) = "(" ++ show e1 ++ " + " ++ show e2 ++ ")" 
+  show (Sub e1 e2) = "(" ++ show e1 ++ " - " ++ show e2 ++ ")"
+  show (Mul e1 e2) = "(" ++ show e1 ++ " * " ++ show e2 ++ ")"
+  show (Div e1 e2) = "(" ++ show e1 ++ " / " ++ show e2 ++ ")"
 
 eval : Expr -> Integer
 eval (Num i) = i
