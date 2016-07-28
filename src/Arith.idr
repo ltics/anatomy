@@ -1,5 +1,9 @@
 module Arith
 
+import public Lightyear
+import public Lightyear.Char
+import public Lightyear.Strings
+
 data Expr = Num Int
           | Add Expr Expr
           | Sub Expr Expr
