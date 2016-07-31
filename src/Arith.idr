@@ -10,7 +10,7 @@ data Expr = Num Integer
           | Mul Expr Expr
           | Div Expr Expr
 
-instance Show Expr where
+implementation Show Expr where
   show (Num i) = show i
   show (Add e1 e2) = "(" ++ show e1 ++ " + " ++ show e2 ++ ")" 
   show (Sub e1 e2) = "(" ++ show e1 ++ " - " ++ show e2 ++ ")"
@@ -45,22 +45,22 @@ mutual
   parseFactor : Parser Expr
   parseFactor = (do f <- parseAtom
                     trim '*'
-                    a <- parseAtom
+                    a <- parseFactor
                     return $ Mul f a)
             <|> (do f <- parseAtom
                     trim '/'
-                    a <- parseAtom
+                    a <- parseFactor
                     return $ Div f a)
             <|> parseAtom
 
   parseTerm : Parser Expr
   parseTerm = (do t <- parseFactor
                   trim '+'
-                  f <- parseFactor
+                  f <- parseTerm
                   return $ Add t f)
           <|> (do t <- parseFactor
                   trim '-'
-                  f <- parseFactor
+                  f <- parseTerm
                   return $ Sub t f)
           <|> parseFactor
 
