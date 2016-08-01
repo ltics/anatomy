@@ -4,9 +4,8 @@ import public Lightyear
 import public Lightyear.Char
 import public Lightyear.Strings
 
-import Value
 import Operator
-import Arith
+import Core
 
 %access public export
 
