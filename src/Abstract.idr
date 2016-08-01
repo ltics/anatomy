@@ -46,13 +46,12 @@ typeCheck (If p c a) env = do pt <- typeCheck p env
 typeCheck (Variable x) env = case lookup x env of
                                Just t => return t
                                Nothing => Left $ "Type of variable " ++ x ++ " not found"
-typeCheck (Declare x exp body) env =  typeCheck body env'
-  where env' = case typeCheck exp env of
-                 Right t => (x, t) :: env'
-                 Left _ => []
-typeCheck (Function x t body) env = do bt <- typeCheck body env'
+typeCheck (Declare x exp body) env = do t <- typeCheck exp env
+                                        let env' = (x, t) :: env
+                                        typeCheck body env'
+typeCheck (Function x t body) env = do let env' = (x, t) :: env
+                                       bt <- typeCheck body env'
                                        return $ FunT t bt
-  where env' = (x, t) :: env
 typeCheck (Call fun arg) env = do at <- typeCheck arg env
                                   ft <- typeCheck fun env
                                   case ft of
@@ -64,4 +63,4 @@ typeCheck (Call fun arg) env = do at <- typeCheck arg env
 check : Expr -> T
 check exp = case typeCheck exp [] of
               Right t => t
-              Left _ => NilT
+              Left err => ErrT err

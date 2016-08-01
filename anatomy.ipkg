@@ -1,7 +1,11 @@
 package ipkgparser
 
 modules    = Main,
-             Arith
+             Operator,
+             Core,
+             Parser,
+             Eval,
+             Abstract
 
 opts       = "-p lightyear"
 

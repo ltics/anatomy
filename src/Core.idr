@@ -5,23 +5,23 @@ import Operator
 %access public export
 
 mutual
-  data T = NilT
-         | IntT
+  data T = IntT
          | BoolT
          | FunT T T
+         | ErrT String
 
   implementation Eq T where
-    NilT == NilT = True
     IntT == IntT = True
     BoolT == BoolT = True
     (FunT t11 t12) == (FunT t21 t22) = t11 == t21 && t12 == t22
+    (ErrT err1) == (ErrT err2) = err1 == err2
     _ == _ = False
 
   implementation Show T where
-    show NilT = "nil"
     show IntT = "int"
     show BoolT = "bool"
     show (FunT t1 t2) = show t1 ++ " -> " ++ show t2
+    show (ErrT err) = err
 
   Env : Type
   Env = List (String, Value)
@@ -71,5 +71,7 @@ mutual
     show (Binary op e1 e2) = "(" ++ show e1 ++ " " ++ show op ++ " " ++ show e2 ++ ")"
     show (If pred cons alt) = "(if " ++ show pred ++ " then " ++ show cons ++ " else " ++ show alt ++ ")"
     show (Variable x) = x
-    show (Declare name val body) = "let " ++ name ++ " = " ++ show val ++ " in " ++ show body ++ ")"
+    show (Declare name val body) = "let " ++ name ++ " = " ++ show val ++ " in " ++ show body
+    show (Function param t body) = "fn(" ++ param ++ " : " ++ show t ++ "){" ++ show body ++ "}"
+    show (Call fn arg) = show fn ++ "(" ++ show arg ++ ")"
 

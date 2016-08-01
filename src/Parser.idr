@@ -23,12 +23,11 @@ identifier = spaces *> map pack (some (satisfy isAlpha)) <* spaces
 
 mutual
   parseAtom : Parser Expr
-  parseAtom = (do trim '('
-                  fn <- parseExpr
-                  spaces
+  parseAtom = (do fn <- identifier
+                  trim '('
                   arg <- parseExpr
                   trim ')'
-                  return $ Call fn arg)
+                  return $ Call (Variable fn) arg)
           <|> (do digits <- some digit
                   return $ Literal $ IntV $ fromDigits digits)
           <|> (do trims "true"

@@ -3,6 +3,8 @@ module Eval
 import Operator
 import Core
 
+%access public export
+
 unary : UnaryOp -> Value -> Value
 unary Not (BoolV b) = BoolV (not b)
 unary Neg (IntV i) = IntV (-i)
@@ -31,10 +33,9 @@ eval (If pred cons alt) env = do (BoolV p) <- eval pred env
                                  if p then eval cons env
                                       else eval alt env
 eval (Variable x) env = lookup x env
-eval (Declare name val body) env = eval body env'
-  where env' = case eval val env of
-                 Just v => (name, v) :: env' -- for recursion
-                 Nothing => []
+eval (Declare name val body) env = do v <- eval val env
+                                      let env' = (name, v) :: env
+                                      eval body env'
 eval (Function name _ body) env = return $ ClosureV name body env
 eval (Call fn arg) env = do (ClosureV x body cenv) <- eval fn env
                             argv <- eval arg env
@@ -44,6 +45,6 @@ eval (Call fn arg) env = do (ClosureV x body cenv) <- eval fn env
 exec : Expr -> Value
 exec exp = case eval exp [] of
              Just result => result
-             Nothing => Nil
+             Nothing => NilV
 
 
