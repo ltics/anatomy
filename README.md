@@ -5,6 +5,8 @@
 ```
 idris -p lightyear
 idris --build anatomy.ipkg
+./anatomy test
+./anatomy example.l
 ```
 
 ## Todos

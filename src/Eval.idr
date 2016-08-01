@@ -46,5 +46,3 @@ exec : Expr -> Value
 exec exp = case eval exp [] of
              Just result => result
              Nothing => NilV
-
-

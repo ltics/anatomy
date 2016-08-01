@@ -1,11 +1,12 @@
-package ipkgparser
+package anatomy
 
-modules    = Main,
-             Operator,
-             Core,
-             Parser,
-             Eval,
-             Abstract
+modules    = Main
+           , Operator
+           , Core
+           , Parser
+           , Eval
+           , Abstract
+           , Test
 
 opts       = "-p lightyear"
 

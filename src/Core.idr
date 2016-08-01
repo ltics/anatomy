@@ -74,4 +74,3 @@ mutual
     show (Declare name val body) = "let " ++ name ++ " = " ++ show val ++ " in " ++ show body
     show (Function param t body) = "fn(" ++ param ++ " : " ++ show t ++ "){" ++ show body ++ "}"
     show (Call fn arg) = show fn ++ "(" ++ show arg ++ ")"
-

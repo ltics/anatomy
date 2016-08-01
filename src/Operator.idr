@@ -52,4 +52,3 @@ implementation Eq UnaryOp where
   Neg == Neg = True
   Not == Not = True
   _ == _ = False
-
