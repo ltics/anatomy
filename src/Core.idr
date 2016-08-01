@@ -83,9 +83,10 @@ eval (If pred cons alt) env = do (BoolV p) <- eval pred env
                                  if p then eval cons env
                                       else eval alt env
 eval (Variable x) env = lookup x env
-eval (Declare name val body) env = do v <- eval val env
-                                      let env' = (name, v) :: env
-                                      eval body env'
+eval (Declare name val body) env = eval body env'
+  where env' = case eval val env of
+                 Just v => (name, v) :: env' -- for recursion
+                 Nothing => env
 eval (Function name body) env = return $ ClosureV name body env
 eval (Call fn arg) env = do (ClosureV x body cenv) <- eval fn env
                             argv <- eval arg env
