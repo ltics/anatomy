@@ -107,15 +107,29 @@ mutual
                 return $ Binary Or a o)
         <|> parseAnd
 
+  parseType : Parser T
+  parseType = (do trims "int"
+                  return IntT)
+          <|> (do trims "bool"
+                  return BoolT)
+          <|> (do trim '('
+                  t1 <- parseType
+                  trims "->"
+                  t2 <- parseType
+                  trim ')'
+                  return $ FunT t1 t2)
+
   parseExpr : Parser Expr
   parseExpr = (do trims "function"
                   trim '('
                   param <- identifier
+                  trim ':'
+                  t <- parseType
                   trim ')'
                   trim '{'
                   body <- parseExpr
                   trim '}'
-                  return $ Function param body)
+                  return $ Function param t body)
           <|> (do trims "var"
                   id <- identifier
                   trim '='
@@ -133,9 +147,7 @@ mutual
                   return $ If pred cons alt)
           <|> parseOr
 
-toplevel : String -> String
+toplevel : String -> Maybe Expr
 toplevel input = case parse parseExpr input of
-                   Right res => case eval res [] of
-                                  Just r => show r
-                                  Nothing => "nothing"
-                   Left err  => err
+                   Right res => return res
+                   Left err => Nothing

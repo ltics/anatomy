@@ -5,23 +5,41 @@ import Operator
 %access public export
 
 mutual
+  data T = NilT
+         | IntT
+         | BoolT
+         | FunT T T
+
+  implementation Eq T where
+    NilT == NilT = True
+    IntT == IntT = True
+    BoolT == BoolT = True
+    (FunT t11 t12) == (FunT t21 t22) = t11 == t21 && t12 == t22
+    _ == _ = False
+
+  implementation Show T where
+    show NilT = "nil"
+    show IntT = "int"
+    show BoolT = "bool"
+    show (FunT t1 t2) = show t1 ++ " -> " ++ show t2
+
   Env : Type
   Env = List (String, Value)
 
-  data Value = Nil
+  data Value = NilV
              | IntV Integer
              | BoolV Bool
              | ClosureV String Expr Env
 
   implementation Eq Value where
-    Nil == Nil = True
+    NilV == NilV = True
     (IntV a) == (IntV b) = a == b
     (BoolV a) == (BoolV b) = a == b
     --(ClosureV n1 e1 env1) == (ClosureV n2 e2 env2) = n1 == n2 && e1 == e2 && env1 == env2
     _ == _ = False
 
   implementation Show Value where
-    show Nil = "nil"
+    show NilV = "nil"
     show (IntV n) = show n
     show (BoolV True) = "true"
     show (BoolV False) = "false"
@@ -33,7 +51,7 @@ mutual
             | If Expr Expr Expr
             | Variable String
             | Declare String Expr Expr
-            | Function String Expr
+            | Function String T Expr
             | Call Expr Expr
 
   implementation Eq Expr where
@@ -43,7 +61,7 @@ mutual
     (If p1 c1 a1) == (If p2 c2 a2) = p1 == p2 && c1 == c2 && a1 == a2
     (Variable x1) == (Variable x2) = x1 == x2
     (Declare n1 v1 b1) == (Declare n2 v2 b2) = n1 == n2 && v1 == v2 && b1 == b2
-    (Function n1 b1) == (Function n2 b2) = n1 == n2 && b1 == b2
+    (Function n1 t1 b1) == (Function n2 t2 b2) = n1 == n2 && t1 == t2 && b1 == b2
     (Call e11 e12) == (Call e21 e22) = e11 == e21 && e12 == e22
     _ == _ = False
 
@@ -55,45 +73,3 @@ mutual
     show (Variable x) = x
     show (Declare name val body) = "let " ++ name ++ " = " ++ show val ++ " in " ++ show body ++ ")"
 
-unary : UnaryOp -> Value -> Value
-unary Not (BoolV b) = BoolV (not b)
-unary Neg (IntV i) = IntV (-i)
-
-binary : BinaryOp -> Value -> Value -> Value;
-binary Add (IntV a) (IntV b) = IntV $ a + b
-binary Sub (IntV a) (IntV b) = IntV $ a - b
-binary Mul (IntV a) (IntV b) = IntV $ a * b
-binary Div (IntV a) (IntV b) = IntV $ a `div` b
-binary And (BoolV a) (BoolV b) = BoolV $ a && b
-binary Or (BoolV a) (BoolV b) = BoolV $ a || b
-binary LT (IntV a) (IntV b) = BoolV $ a < b
-binary LE (IntV a) (IntV b) = BoolV $ a <= b
-binary GT (IntV a) (IntV b) = BoolV $ a > b
-binary GE (IntV a) (IntV b) = BoolV $ a >= b
-binary EQ a b = BoolV $ a == b
-
-eval : Expr -> Env -> Maybe Value
-eval (Literal v) _ = return v
-eval (Unary op e) env = do v <- eval e env
-                           return $ unary op v
-eval (Binary op e1 e2) env = do v1 <- eval e1 env
-                                v2 <- eval e2 env
-                                return $ binary op v1 v2
-eval (If pred cons alt) env = do (BoolV p) <- eval pred env
-                                 if p then eval cons env
-                                      else eval alt env
-eval (Variable x) env = lookup x env
-eval (Declare name val body) env = eval body env'
-  where env' = case eval val env of
-                 Just v => (name, v) :: env' -- for recursion
-                 Nothing => env
-eval (Function name body) env = return $ ClosureV name body env
-eval (Call fn arg) env = do (ClosureV x body cenv) <- eval fn env
-                            argv <- eval arg env
-                            let env' = (x, argv) :: cenv
-                            eval body env'
-
-exec : Expr -> Value
-exec exp = case eval exp [] of
-             Just result => result
-             Nothing => Nil
