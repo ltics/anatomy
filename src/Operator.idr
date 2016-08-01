@@ -1,5 +1,6 @@
 module Operators
 
+%default total
 %access public export
 
 data BinaryOp = Add
