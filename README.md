@@ -5,7 +5,7 @@
 ```
 idris -p lightyear
 idris --build anatomy.ipkg
-./anatomy test
+idris --testpkg anatomy.ipkg
 ./anatomy example.l
 ```
 

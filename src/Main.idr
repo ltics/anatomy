@@ -6,7 +6,6 @@ import Core
 import Parser
 import Eval
 import Abstract
-import Test
 import Lightyear.Strings
 
 processArgs : List String -> Maybe String
@@ -28,7 +27,5 @@ main : IO ()
 main = do
   args <- getArgs
   case processArgs args of
-    Just arg => if arg == "test"
-                then spec
-                else processFile arg
+    Just fname => processFile fname
     Nothing => putStrLn "anatomy"

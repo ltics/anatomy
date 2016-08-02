@@ -1,12 +1,13 @@
 package anatomy
 
-modules    = Main
-           , Operator
+modules    = Operator
            , Core
            , Parser
            , Eval
            , Abstract
            , Test
+
+tests      = Test.spec
 
 opts       = "-p lightyear"
 
